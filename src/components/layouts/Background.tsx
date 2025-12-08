@@ -1,15 +1,18 @@
-import {
-  StyleSheet,
-  View
-} from 'react-native';
+import { ReactNode } from 'react';
+import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { Colors } from '../../utils/Colors';
 
-export default function background(props) {
+interface PropsContainer {
+  children: ReactNode;
+}
+
+export default function Background(props: PropsContainer) {
   return (
     <LinearGradient
-      colors={['#020024', '#090979', '#99badd']}
+      colors={['#041E42', '#041E42', '#FF4500']}
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }} // 90 degrees horizontal
+      end={{ x: 1, y: 1 }}
       style={Styles.LinearGradient}
     >
       <View style={Styles.background}>{props.children}</View>
@@ -23,7 +26,7 @@ const Styles = StyleSheet.create({
   },
   background: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: Colors.bgPrimary,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',

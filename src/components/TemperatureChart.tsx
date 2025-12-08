@@ -1,17 +1,34 @@
 import { useEffect, useState } from 'react';
 import { Dimensions, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
+import { Colors } from '../utils/Colors';
 
-export default function TemperatureChart(props) {
-  const [labels, setLabels] = useState([]);
-  const [data, setData] = useState([]);
+interface PropsContainer {
+  data: [
+    {
+      dt: number;
+      dt_txt: string;
+      main: Record<string, number>;
+      weather: [
+        {
+          icon: string;
+        },
+      ];
+    },
+  ];
+}
+
+export default function TemperatureChart(props: PropsContainer) {
+  const [labels, setLabels] = useState([] as string[]);
+  const [data, setData] = useState([] as number[]);
 
   useEffect(() => {
     const inData = props.data;
+    // console.log('IND: ', inData);
     if (inData) {
       // console.log(inData)
-      const arrData = [];
-      const arrLabel = [];
+      const arrData: number[] = [];
+      const arrLabel: string[] = [];
       for (let a = 0; a < 7; a++) {
         const time = new Date(inData[a].dt_txt);
         arrLabel.push(
@@ -36,17 +53,17 @@ export default function TemperatureChart(props) {
             datasets: [
               {
                 data: data,
-                color: () => '#090979',
+                color: () => Colors.primary,
               },
-            ], 
+            ],
           }}
           width={Dimensions.get('window').width}
           height={180}
           chartConfig={{
             backgroundGradientFromOpacity: 0,
             backgroundGradientToOpacity: 0,
-            color: () => 'rgba(255, 255, 255, 0)',
-            labelColor: () => '#090979',
+            color: () => Colors.primary,
+            labelColor: () => Colors.secondary,
             style: {},
             propsForDots: {
               r: '0',

@@ -1,27 +1,56 @@
 import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
-import DayBtn from '../Buttons/DayBtn';
+import DayBtn from '../buttons/DayBtn';
 import { useEffect, useState } from 'react';
+import { useCityWeather } from '../../context/Context';
+import { Colors } from '../../utils/Colors';
 
-export default function BottomWeatherLayout(props) {
-  const [parsedList, setParsedList] = useState({});
-  
+interface InnerParsedDataFormat {
+  icon: { [key: string]: number };
+  minT: number;
+  maxT: number;
+  current?: boolean;
+}
+
+interface parsedDataFormat {
+  [key: string]: InnerParsedDataFormat;
+}
+
+interface PropsContainer {
+  cityName: string;
+}
+
+export default function BottomWeatherLayout(props: PropsContainer) {
+  const [parsedList, setParsedList] = useState({} as parsedDataFormat);
+  const city = useCityWeather();
+  const todayWeather = city[props.cityName]?.currentWeather;
+
   useEffect(() => {
-    const inData = props.dataList;
-    // console.log("BOTTOM: ", inData)
+    const inData: [
+      {
+        dt: number;
+        dt_txt: string;
+        main: Record<string, number>;
+        weather: [
+          {
+            icon: string;
+          },
+        ];
+      },
+    ] = city[props.cityName]?.forecast.list;
 
     if (inData) {
-      const element = Object.entries(props.currentDay)[0];
-      const parsedData = {};
-      parsedData[element[0]] = {
-        maxT: element[1].maxT,
-        minT: element[1].minT,
-        icon: element[1].icon,
-        current: element[1].current,
-      };
-      
       const today = new Date().toLocaleString('en-US', {
         weekday: 'long',
       });
+      const parsedData: parsedDataFormat = {};
+      parsedData[today] = {
+        maxT: todayWeather.main.temp_max,
+        minT: todayWeather.main.temp_min,
+        icon: { [todayWeather.weather[0].icon]: 1 },
+        current: true,
+      };
+
+      // console.log(parsedData);
 
       for (let a = 0; a < inData.length; a++) {
         const date = new Date(inData[a].dt_txt);
@@ -63,6 +92,7 @@ export default function BottomWeatherLayout(props) {
               minT: minTemp,
               icon: {},
             };
+
             if (curTime > 5 && curTime < 21) {
               parsedData[curDay].icon[iconVal] = 1;
             }
@@ -73,7 +103,7 @@ export default function BottomWeatherLayout(props) {
       // console.log('paresed', parsedData);
       setParsedList(parsedData);
     }
-  }, [props.dataList, props.currentDay]);
+  }, [city[props.cityName]]);
 
   return (
     <View style={Styles.container}>
@@ -86,7 +116,6 @@ export default function BottomWeatherLayout(props) {
         renderItem={item => (
           <DayBtn data={Object.entries(parsedList)[item.index]} />
         )}
-        keyExtractor={item => item}
       ></FlatList>
     </View>
   );
@@ -99,7 +128,7 @@ const Styles = StyleSheet.create({
     padding: 10,
   },
   forecastTxt: {
-    color: 'white',
+    color: Colors.secondary,
     marginLeft: 8,
   },
 });

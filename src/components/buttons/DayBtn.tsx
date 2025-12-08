@@ -1,35 +1,51 @@
 import { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../../utils/Colors';
 
-export default function DayBtn(props) {
-  const [day, setDay] = useState();
-  const [minT, setMinT] = useState();
-  const [maxT, setMaxT] = useState();
-  const [icon, setIcon] = useState();
+interface PropsData {
+  icon: { [key: string]: number };
+  minT: number;
+  maxT: number;
+  current?: boolean;
+}
+
+interface PropsContainer {
+  data: [string, PropsData];
+}
+
+export default function DayBtn(props: PropsContainer) {
+  const [day, setDay] = useState('');
+  const [minT, setMinT] = useState(0);
+  const [maxT, setMaxT] = useState(0);
+  const [icon, setIcon] = useState('');
   const [current, setCurrent] = useState(false);
 
   useEffect(() => {
-    const input = props.data;
-    // console.log("DayBrn: ",input)
+    const input = props?.data;
+    // console.log('props: ', input);
     if (input) {
+      // console.log('DayBrn: ', input);
       setDay(input[0]);
       setMinT(input[1].minT);
       setMaxT(input[1].maxT);
 
       if (input[1].current) setCurrent(true);
 
-      let curName = Object.entries(input[1].icon)[0][0];
-      let curOccurence = Object.entries(input[1].icon)[0][1];
+      if (Object.entries(input[1].icon).length > 0) {
+        let curName = Object.entries(input[1].icon)[0][0];
+        let curOccurence = Object.entries(input[1].icon)[0][1];
 
-      Object.entries(input[1].icon).forEach(element => {
-        const occurence = element[1];
-        if (occurence > curOccurence) {
-          curOccurence = occurence;
-          curName = element[0];
-        }
-      });
+        Object.entries(input[1].icon).forEach(element => {
+          const occurence = element[1];
+          if (occurence > curOccurence) {
+            curOccurence = occurence;
+            curName = element[0];
+          }
+        });
 
-      setIcon(curName);
+        // console.log(input[0]  + ": ", curName)
+        setIcon(curName);
+      }
     }
   }, []);
 
@@ -45,9 +61,9 @@ export default function DayBtn(props) {
             source={{ uri: `https://openweathermap.org/img/wn/${icon}@4x.png` }}
           />
           <Text style={{ ...Styles.color, ...Styles.middleTxt }}>
-            {Math.round(maxT)}°
+            {Math.round(maxT)}°{' '}
+            <Text style={{ ...Styles.curColor }}>/ {Math.round(minT)}°</Text>
           </Text>
-          <Text style={{ ...Styles.curColor }}>{Math.round(minT)}°</Text>
         </TouchableOpacity>
       ) : (
         <TouchableOpacity style={Styles.TouchOpCtn}>
@@ -57,9 +73,9 @@ export default function DayBtn(props) {
             source={{ uri: `https://openweathermap.org/img/wn/${icon}@4x.png` }}
           />
           <Text style={{ ...Styles.color, ...Styles.middleTxt }}>
-            {Math.round(maxT)}°
+            {Math.round(maxT)}°{' '}
+            <Text style={{ ...Styles.color }}>/ {Math.round(minT)}°</Text>
           </Text>
-          <Text style={{ ...Styles.color }}>{Math.round(minT)}°</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -69,27 +85,27 @@ export default function DayBtn(props) {
 const Styles = StyleSheet.create({
   container: {
     gap: 3,
-    margin: 5
+    margin: 5,
   },
   TouchOpCtn: {
     padding: 10,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    backgroundColor: Colors.bgQuaternary,
     alignItems: 'center',
     gap: 8,
     width: 100,
   },
   CurTouchOpCtn: {
-    backgroundColor: '#090979',
+    backgroundColor: Colors.primary,
   },
   color: {
-    color: '#090979',
+    color: Colors.primary,
   },
   curColor: {
-    color: 'white',
+    color: Colors.secondary,
   },
   middleTxt: {
-    color: '#E97451',
+    color: Colors.tertiary,
   },
   btnIcon: {
     width: 30,
