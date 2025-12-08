@@ -76,3 +76,7 @@ yarn-error.log
 
 
 .env
+
+# Sensitive/Config files
+plot.info
+google-services.json
