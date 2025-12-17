@@ -30,9 +30,10 @@ import {
 } from 'react-native-image-picker';
 import { translate } from '@shopify/react-native-skia';
 import { getApp } from '@react-native-firebase/app';
+import { useTranslation } from 'react-i18next';
 
 export default function Settings() {
-  const [userInfo, setInfo] = useState<Record<string, any>>();
+  const [userInfo, setInfo] = useState<Record<string, any>>({});
   const [email, setEmail] = useState('');
   const inputRef = useRef<TextInput>(null);
   const [editable, setEditable] = useState(false);
@@ -41,12 +42,24 @@ export default function Settings() {
   const auth = getAuth(app);
   const [img, setImg] = useState<Asset | null>(null);
 
+  const { t, i18n } = useTranslation();
+
   useEffect(() => {
     const email: string = auth.currentUser?.email || '';
     setEmail(email);
+    console.log(userInfo);
     if (email.length > 0) {
       const userDocRef = doc(db, 'UserData', email);
-      getDoc(userDocRef).then(res => setInfo(res.data() || {}));
+      getDoc(userDocRef).then(res =>
+        setInfo(
+          res.data() || {
+            Age: '',
+            FirstName: '',
+            LastName: '',
+            Phone: '',
+          },
+        ),
+      );
     }
   }, []);
 
@@ -72,11 +85,17 @@ export default function Settings() {
   const savePersonalData = () => {
     setEditable(false);
   };
+  const labelKeys: Record<string, string> = {
+    Age: 'settings.data.1',
+    FirstName: 'settings.data.2',
+    LastName: 'settings.data.3',
+    Phone: 'settings.data.4',
+  };
 
   return (
     <Background>
       <KeyboardAvoidingView style={Styles.container} behavior="padding">
-        <Header title="" />
+        <Header title="" color={Colors.bgTertiary} />
         <View style={Styles.profileImgCtn}>
           {img == null ? (
             <Image
@@ -84,7 +103,7 @@ export default function Settings() {
               source={require('../../assets/icons/user_icon.png')}
             />
           ) : (
-            <Image style={Styles.profileImg} source={{ uri: img.uri}} />
+            <Image style={Styles.profileImg} source={{ uri: img.uri }} />
           )}
 
           <TouchableOpacity onPress={editProfilePicture}>
@@ -97,7 +116,7 @@ export default function Settings() {
         {email.length > 0 ? (
           <View style={Styles.emailDetailCtn}>
             <View style={Styles.titleCtn}>
-              <Text style={Styles.titleTxt}>Personal Data </Text>
+              <Text style={Styles.titleTxt}>{t('settings.title')}</Text>
 
               {editable ? (
                 <TouchableOpacity
@@ -120,7 +139,7 @@ export default function Settings() {
             </View>
 
             <View style={Styles.penImgCtn}>
-              <Text style={Styles.penImgTxt}>Email: </Text>
+              <Text style={Styles.penImgTxt}>{t('settings.data.0')}: </Text>
               <TextInput
                 style={Styles.textInput}
                 ref={inputRef}
@@ -128,28 +147,46 @@ export default function Settings() {
                 editable={editable}
               />
             </View>
-            {Object.keys(userInfo || {}).length > 0 ? (
-              <FlatList
-                data={Object.keys(userInfo || {})}
-                renderItem={({ item }) => (
-                  <View style={Styles.penImgCtn}>
-                    <Text style={Styles.penImgTxt}>{item}: </Text>
-                    <TextInput
-                      style={Styles.textInput}
-                      ref={inputRef}
-                      value={`${userInfo?.[item]}`}
-                      editable={editable}
-                    />
-                  </View>
-                )}
-              />
-            ) : (
-              <Text>No Data for current User</Text>
-            )}
+            <FlatList
+              data={Object.keys(userInfo || {})}
+              renderItem={({ item }) => (
+                <View style={Styles.penImgCtn}>
+                  <Text style={Styles.penImgTxt}>{t(labelKeys[item])} :</Text>
+                  <TextInput
+                    style={Styles.textInput}
+                    ref={inputRef}
+                    value={`${userInfo?.[item]}`}
+                    editable={editable}
+                    placeholder={
+                      userInfo?.[item].length > 0
+                        ? undefined
+                        : t('settings.error')
+                    }
+                    placeholderTextColor={Colors.secondary}
+                  />
+                </View>
+              )}
+            />
           </View>
         ) : (
-          <Text>Not LoggedIn</Text>
+          <Text style={Styles.textColor}>{t('settings.errorNoAcc')}</Text>
         )}
+        <View style={Styles.langCtn}>
+          <Text style={{ ...Styles.textColor, ...Styles.langTxt }}>
+            {t('settings.lang')} :
+          </Text>
+          <FlatList
+            data={['En', 'Es', 'Fr']}
+            horizontal={true}
+            renderItem={({ item }) => {
+              return (
+                <TouchableOpacity style={Styles.langTxt}>
+                  <Text style={Styles.textColor}>{item}</Text>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
       </KeyboardAvoidingView>
     </Background>
   );
@@ -212,7 +249,6 @@ const Styles = StyleSheet.create({
   penImgTxt: {
     color: Colors.primary,
     fontSize: 20,
-    width: '30%',
   },
   penImgCtn: {
     flexDirection: 'row',
@@ -228,5 +264,20 @@ const Styles = StyleSheet.create({
     height: 25,
     width: 25,
     tintColor: Colors.primary,
+  },
+  langCtn: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  langFlatlist: {
+
+  },
+  langBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: 20,
+    padding: 15,
+  },
+  langTxt: {
+    marginHorizontal: 10,
   },
 });

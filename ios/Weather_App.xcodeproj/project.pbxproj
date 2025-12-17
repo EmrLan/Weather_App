@@ -12,7 +12,7 @@
 		7146509AD39BF5B383572BBE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		E9DF224B2EE00F0600A2F991 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E9DF224A2EE00F0600A2F991 /* GoogleService-Info.plist */; };
+		E9061DF42EE88E6F003242B5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E9061DF32EE88E6F003242B5 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,7 +24,7 @@
 		5709B34CF0A7D63546082F79 /* Pods-Weather_App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Weather_App.release.xcconfig"; path = "Target Support Files/Pods-Weather_App/Pods-Weather_App.release.xcconfig"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Weather_App/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Weather_App/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		E9DF224A2EE00F0600A2F991 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E9061DF32EE88E6F003242B5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E9DF224C2EE0196900A2F991 /* Weather_App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Weather_App.entitlements; path = Weather_App/Weather_App.entitlements; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F12CB4059FFA0097AF5DC3FB /* Pods_Weather_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Weather_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,6 +45,7 @@
 		13B07FAE1A68108700A75B9A /* Weather_App */ = {
 			isa = PBXGroup;
 			children = (
+				E9061DF32EE88E6F003242B5 /* GoogleService-Info.plist */,
 				E9DF224C2EE0196900A2F991 /* Weather_App.entitlements */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
@@ -74,7 +75,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				E9DF224A2EE00F0600A2F991 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* Weather_App */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -165,7 +165,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
-				E9DF224B2EE00F0600A2F991 /* GoogleService-Info.plist in Resources */,
+				E9061DF42EE88E6F003242B5 /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				7146509AD39BF5B383572BBE /* PrivacyInfo.xcprivacy in Resources */,
 			);

@@ -1,21 +1,24 @@
 import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { CityWeatherProvider } from './src/context/Context';
-import AppContainer from './src/views/AppContainer';
+import AppContainer from './src/AppContainer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Provider } from 'react-redux';
+import Store from './src/redux/Store';
+import './src/translations/i18n.tsx';
+import ErrorPage from './src/ErrorPage.tsx';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <StatusBar barStyle={'light-content'} />
 
-      <GestureHandlerRootView>
-        <CityWeatherProvider>
-          <AppContainer />
-        </CityWeatherProvider>
-      </GestureHandlerRootView>
+      <ErrorPage>
+        <GestureHandlerRootView>
+          <Provider store={Store}>
+            <AppContainer />
+          </Provider>
+        </GestureHandlerRootView>
+      </ErrorPage>
     </SafeAreaProvider>
   );
 }

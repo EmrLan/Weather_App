@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import Background from '../../components/layouts/Background';
 import InputField from '../../components/inputField/InputField';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Colors } from '../../utils/Colors';
 import Header from '../../components/layouts/Header';
 import firestore, {
@@ -26,7 +26,8 @@ import firestore, {
 import { getAuth } from '@react-native-firebase/auth';
 import { getApp } from '@react-native-firebase/app';
 import { ProfileScreenNavigationProp } from '../../navigation/Navigation';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 interface ChatData {
   email: string;
@@ -54,12 +55,22 @@ export default function SupportChat({ route }: { route: any }) {
 
   const [errorMsg, setErrorMsg] = useState('');
   const [chat, setChat] = useState<ChatMessage>({});
+  const { t, i18n } = useTranslation();
+
+  useLayoutEffect(() => {
+    console.log('UseLayoutEffect');
+  });
+
+  useFocusEffect(() => {
+    console.log('Route Email: ', routeEmail);
+  });
 
   useEffect(() => {
+    console.log('UseEffect');
     // console.log('routeE: ', routeEmail)
+
     const userEmail = auth.currentUser?.email || '';
     setChat({});
-
     // if (!routeEmail && userEmail) navigation.navigate('SuperChat');
 
     if (userEmail.length > 0) {
@@ -77,7 +88,7 @@ export default function SupportChat({ route }: { route: any }) {
       return () => {
         unSubscribe();
         route.params = undefined;
-      }
+      };
     }
   }, [routeEmail]);
 
@@ -142,7 +153,14 @@ export default function SupportChat({ route }: { route: any }) {
       <KeyboardAvoidingView behavior={'padding'} style={Styles.container}>
         <View style={Styles.topContainer}>
           <View style={Styles.headerCtn}>
-            <Header title={email == 'support@gmail.com'? `${routeEmail}` :'Support Chat'} />
+            <Header
+              title={
+                email == 'support@gmail.com'
+                  ? `${routeEmail}`
+                  : `${t('support.chatTitle')}`
+              }
+              icon={require('../../../assets/icons/close_icon.png')}
+            />
           </View>
 
           <View style={Styles.msgCtn}>
@@ -157,7 +175,7 @@ export default function SupportChat({ route }: { route: any }) {
                   >
                     <Text style={Styles.supportTitle}>
                       {chat[item].email == 'support@gmail.com'
-                        ? 'Support:'
+                        ? `${t('support.chatName')}:`
                         : chat[item].email}
                     </Text>
                     <Text style={Styles.supportChat}>{chat[item].msg}</Text>
@@ -167,7 +185,9 @@ export default function SupportChat({ route }: { route: any }) {
                     key={JSON.stringify(chat[item])}
                     style={Styles.userChatCtn}
                   >
-                    <Text style={Styles.userTitle}>You:</Text>
+                    <Text style={Styles.userTitle}>
+                      {t('support.chatUser')}:
+                    </Text>
                     <Text style={Styles.userChat}>{chat[item].msg}</Text>
                   </View>
                 );
@@ -178,14 +198,15 @@ export default function SupportChat({ route }: { route: any }) {
         <View style={Styles.bottomContainer}>
           <View style={Styles.inputAndBtnCtn}>
             <InputField
-              fn={setInput}
-              submitFn={onSubmit}
+              onChangeText={setInput}
+              onSubmitEditing={onSubmit}
               error={errorMsg}
               value={input}
-              placeholder={'Enter Your Message Here'}
+              placeholder={t('support.value')}
+              placeholderTextColor={Colors.secondary}
             />
             <TouchableOpacity style={Styles.addIconCtn} onPress={onSubmit}>
-              <Text style={Styles.addIconTxt}>Send</Text>
+              <Text style={Styles.addIconTxt}>{t('support.btn')}</Text>
             </TouchableOpacity>
           </View>
           <Text style={Styles.errMsg}>{errorMsg}</Text>

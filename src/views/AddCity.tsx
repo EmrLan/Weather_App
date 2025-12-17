@@ -4,37 +4,39 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import InputField from '../components/inputField/InputField';
+import { useDispatch, useSelector } from 'react-redux';
+import InputField, { InputFieldImperativeHandle } from '../components/inputField/InputField';
 import Background from '../components/layouts/Background';
 import Header from '../components/layouts/Header';
+import { RootState } from '../redux/Store';
 import {
   GetCurrentWeatherDataWithName,
   GetFiveDayWeatherForecastithName,
 } from '../services/OpenWeatherServices';
-import Config from 'react-native-config';
-import { useCityWeather, useCityWeatherUpdate } from '../context/Context';
-import { ACTIONS } from '../reducer/CityWeatherAction';
-import { CurrentWeatherData, FiveDayForecastData } from './AppContainer';
 import { Colors } from '../utils/Colors';
-
-interface InputFieldRef {
-  imperativeClear: () => void;
-  imperativeBlur: () => void;
-}
+import { CurrentWeatherData, FiveDayForecastData } from '../AppContainer';
+import {
+  ADD_WEATHER_LOCATION,
+  REMOVE_WEATHER_LOCATION,
+} from '../redux/actions/ActionTypes';
+import { useTranslation } from 'react-i18next';
 
 export default function AddCity() {
-  const contextCity = useCityWeather();
-  const dispatchCity = useCityWeatherUpdate();
-  const cityList = Object.keys(contextCity);
+  const citiesWeatherData = useSelector((state: RootState) => state.Weather);
+  const locationCity = useSelector(
+    (state: RootState) => state.Location.cityName,
+  );
+  const dispatch = useDispatch();
+  const cityList = Object.keys(citiesWeatherData);
   const [city, setCity] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  const curRef = useRef<InputFieldRef>(null);
+  const curRef = useRef<InputFieldImperativeHandle>(null);
+  const { t, i18n } = useTranslation();
 
   const [cityWeather, setCityWeather] = useState({} as CurrentWeatherData);
   const [cityFiveDayForecast, setCityFiveDayForecast] = useState(
@@ -46,26 +48,23 @@ export default function AddCity() {
       Object.entries(cityWeather).length > 0 &&
       Object.entries(cityFiveDayForecast).length > 0
     ) {
-      dispatchCity({
-        type: ACTIONS.ADD,
+      dispatch({
+        type: ADD_WEATHER_LOCATION,
         payload: {
           name: cityWeather.name || cityFiveDayForecast.city.name,
           currentWeather: cityWeather,
           forecast: cityFiveDayForecast,
-          location: contextCity?.[cityWeather.name]?.geolocation
-            ? contextCity[cityWeather.name].geolocation
-            : false,
         },
       });
       setCityWeather({} as CurrentWeatherData),
         setCityFiveDayForecast({} as FiveDayForecastData);
     }
-  }, [cityWeather, cityFiveDayForecast, dispatchCity]);
+  }, [cityWeather, cityFiveDayForecast, dispatch]);
 
   const onSubmit = useCallback(() => {
     if (curRef.current) curRef.current.imperativeBlur();
     if (!city.trim()) return;
-    GetCurrentWeatherDataWithName(city, Config.OPEN_WEATHER_KEY || '')
+    GetCurrentWeatherDataWithName(city)
       .then(data => {
         if (data.cod == '404') setErrorMsg(data.message);
         else {
@@ -75,10 +74,10 @@ export default function AddCity() {
         }
       })
       .catch(e => {
-        console.log(e);
+        setErrorMsg('City Not Found.');
       });
 
-    GetFiveDayWeatherForecastithName(city, Config.OPEN_WEATHER_KEY || '')
+    GetFiveDayWeatherForecastithName(city)
       .then(data => {
         if (data.cod == '404') setErrorMsg(data.message);
         else {
@@ -92,7 +91,7 @@ export default function AddCity() {
   }, [city]);
 
   const onDelete = (inCity: string) => {
-    dispatchCity({ type: ACTIONS.REMOVE, payload: { name: inCity } });
+    dispatch({ type: REMOVE_WEATHER_LOCATION, payload: { name: inCity } });
   };
 
   return (
@@ -115,23 +114,23 @@ export default function AddCity() {
                     </Text>
                     <View style={Styles.tempIconCtn}>
                       <Text style={{ ...Styles.darkBlue, ...Styles.curTemp }}>
-                        {contextCity[city].currentWeather.main.temp}
+                        {citiesWeatherData[city].currentWeather.main.temp}
                       </Text>
                       <Image
                         style={Styles.weatherIcon}
                         source={{
-                          uri: `https://openweathermap.org/img/wn/${contextCity[city].currentWeather.weather[0].icon}@4x.png`,
+                          uri: `https://openweathermap.org/img/wn/${citiesWeatherData[city].currentWeather.weather[0].icon}@4x.png`,
                         }}
                       />
                     </View>
                     <Text style={{ ...Styles.darkBlue, ...Styles.maxMinCtn }}>
                       <Text style={{ ...Styles.orange }}>
-                        {contextCity[city].currentWeather.main.temp_max}
+                        {citiesWeatherData[city].currentWeather.main.temp_max}
                       </Text>{' '}
-                      / {contextCity[city].currentWeather.main.temp_min}
+                      / {citiesWeatherData[city].currentWeather.main.temp_min}
                     </Text>
                   </View>
-                  {contextCity[city].geolocation ? (
+                  {city == locationCity ? (
                     <Image
                       style={Styles.deleteIcon}
                       source={require('../../assets/icons/location_icon.png')}
@@ -152,18 +151,22 @@ export default function AddCity() {
         <View style={Styles.bottomContainer}>
           <View style={Styles.inputAndBtnCtn}>
             <InputField
-              fn={setCity}
-              submitFn={onSubmit}
+              errorClr="black"
               error={errorMsg}
-              value={city}
-              placeholder={'Enter City Name'}
               ref={curRef}
+              onChangeText={setCity}
+              value={city}
+              placeholder={t('addCity.value')}
+              placeholderTextColor={
+                errorMsg.length > 0 ? 'black' : Colors.secondary
+              }
+              onSubmitEditing={onSubmit}
+              returnKeyType={'done'}
             />
             <TouchableOpacity style={Styles.addIconCtn} onPress={onSubmit}>
-              <Text style={Styles.addIconTxt}>Add City</Text>
+              <Text style={Styles.addIconTxt}>{t('addCity.btnTxt')}</Text>
             </TouchableOpacity>
           </View>
-          <Text style={Styles.errMsg}>{errorMsg}</Text>
         </View>
       </KeyboardAvoidingView>
     </Background>
@@ -257,11 +260,6 @@ const Styles = StyleSheet.create({
     gap: 10,
   },
   addIconTxt: {
-    color: Colors.secondary,
-  },
-  errMsg: {
-    paddingTop: 2,
-    paddingLeft: 20,
     color: Colors.secondary,
   },
 });

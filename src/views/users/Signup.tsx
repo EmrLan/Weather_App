@@ -18,26 +18,40 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '../../navigation/Navigation';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import InputField, {
+  InputFieldImperativeHandle,
+} from '../../components/inputField/InputField';
+import { useTranslation } from 'react-i18next';
 
 export function Signup() {
-  const [fName, setFName] = useState('');
-  const [lName, setLName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [age, setAge] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const { t, i18n } = useTranslation();
 
-  const lNameRef = useRef<TextInput>(null);
-  const phoneRef = useRef<TextInput>(null);
-  const ageRef = useRef<TextInput>(null);
-  const emailRef = useRef<TextInput>(null);
-  const passwordRef = useRef<TextInput>(null);
-  const confirmPassRef = useRef<TextInput>(null);
+  const lNameRef = useRef<InputFieldImperativeHandle>(null);
+  const phoneRef = useRef<InputFieldImperativeHandle>(null);
+  const ageRef = useRef<InputFieldImperativeHandle>(null);
+  const emailRef = useRef<InputFieldImperativeHandle>(null);
+  const passwordRef = useRef<InputFieldImperativeHandle>(null);
+  const confirmPassRef = useRef<InputFieldImperativeHandle>(null);
 
   const navigation = useNavigation<StackNavigationProp>();
 
-  const onSubmit = () => {
+  const onSubmit = ({
+    email,
+    password,
+    fName,
+    lName,
+    phone,
+    age,
+  }: {
+    email: string;
+    password: string;
+    fName: string;
+    lName: string;
+    phone: string;
+    age: string;
+  }) => {
     createUserWithEmailAndPassword(getAuth(), email, password)
       .then(() => {
         console.log('User account created & signed in!');
@@ -62,129 +76,169 @@ export function Signup() {
       });
   };
 
+  const signupSchema = Yup.object().shape({
+    email: Yup.string().email('Invalid email').required('Required'),
+    password: Yup.string().min(8, 'Too Short!').required('Required'),
+    confirmPassword: Yup.string().min(8, 'Too Short!').required('Required'),
+  });
+
   return (
     <Background>
-      <KeyboardAvoidingView style={Styles.keyboardCtn} behavior="padding">
-        <View style={Styles.container}>
-          <Text style={Styles.title}>SIGNUP</Text>
-          <View style={Styles.form}>
-            <TextInput
-              style={{
-                ...Styles.inputField,
-              }}
-              onSubmitEditing={() => lNameRef.current?.focus()}
-              onChangeText={setFName}
-              value={fName}
-              placeholder={'First Name'}
-              placeholderTextColor={Colors.secondary}
-              returnKeyType={'next'}
-            />
+      <View style={Styles.container}>
+        <Text style={Styles.title}>{t('signup.title')}</Text>
+        <KeyboardAvoidingView style={Styles.keyboardCtn} behavior="padding">
+          <Formik
+            initialValues={{
+              fName: '',
+              lName: '',
+              phone: '',
+              age: '',
+              email: '',
+              password: '',
+              confirmPassword: '',
+            }}
+            validationSchema={signupSchema}
+            onSubmit={onSubmit}
+          >
+            {({
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+            }) => (
+              <View style={Styles.form}>
+                <InputField
+                  error={errors.fName && touched.fName ? errors.fName : ''}
+                  txtInputStyle={Styles.inputField}
+                  onBlur={handleBlur('fName')}
+                  onChangeText={handleChange('fName')}
+                  value={values.fName}
+                  onSubmitEditing={() => lNameRef.current?.imperativeFocus()}
+                  placeholder={t('signup.inputs.0')}
+                  placeholderTextColor={Colors.secondary}
+                  returnKeyType={'next'}
+                />
+                <InputField
+                  ref={lNameRef}
+                  error={errors.lName && touched.lName ? errors.lName : ''}
+                  txtInputStyle={Styles.inputField}
+                  onBlur={handleBlur('lName')}
+                  onChangeText={handleChange('lName')}
+                  value={values.lName}
+                  onSubmitEditing={() => phoneRef.current?.imperativeFocus()}
+                  placeholder={t('signup.inputs.1')}
+                  placeholderTextColor={Colors.secondary}
+                  returnKeyType={'next'}
+                />
+                <InputField
+                  ref={phoneRef}
+                  error={errors.phone && touched.phone ? errors.phone : ''}
+                  txtInputStyle={Styles.inputField}
+                  onBlur={handleBlur('phone')}
+                  onChangeText={handleChange('phone')}
+                  value={values.phone}
+                  onSubmitEditing={() => ageRef.current?.imperativeFocus()}
+                  placeholder={t('signup.inputs.2')}
+                  placeholderTextColor={Colors.secondary}
+                  textContentType="telephoneNumber"
+                  inputMode="tel"
+                  returnKeyType={'next'}
+                />
+                <InputField
+                  ref={ageRef}
+                  error={errors.age && touched.age ? errors.age : ''}
+                  txtInputStyle={Styles.inputField}
+                  onBlur={handleBlur('age')}
+                  onChangeText={handleChange('age')}
+                  value={values.age}
+                  onSubmitEditing={() => emailRef.current?.imperativeFocus()}
+                  placeholder={t('signup.inputs.3')}
+                  placeholderTextColor={Colors.secondary}
+                  textContentType="birthdateYear"
+                  inputMode="numeric"
+                  returnKeyType={'next'}
+                />
+                <InputField
+                  ref={emailRef}
+                  error={errors.email && touched.email ? errors.email : ''}
+                  txtInputStyle={Styles.inputField}
+                  onBlur={handleBlur('email')}
+                  onChangeText={handleChange('email')}
+                  value={values.email}
+                  onSubmitEditing={() => passwordRef.current?.imperativeFocus()}
+                  placeholder={t('signup.inputs.4')}
+                  placeholderTextColor={Colors.secondary}
+                  textContentType="emailAddress"
+                  autoComplete="email"
+                  returnKeyType={'next'}
+                  autoCorrect={false}
+                  autoCapitalize="none"
+                />
+                <InputField
+                  ref={passwordRef}
+                  error={
+                    errors.password && touched.password ? errors.password : ''
+                  }
+                  txtInputStyle={Styles.inputField}
+                  onBlur={handleBlur('password')}
+                  onChangeText={handleChange('password')}
+                  value={values.password}
+                  onSubmitEditing={() =>
+                    confirmPassRef.current?.imperativeFocus()
+                  }
+                  placeholder={t('signup.inputs.5')}
+                  placeholderTextColor={Colors.secondary}
+                  textContentType="newPassword"
+                  autoComplete="new-password"
+                  autoCorrect={false}
+                  returnKeyType={'next'}
+                  secureTextEntry
+                />
+                <InputField
+                  ref={confirmPassRef}
+                  error={
+                    errors.confirmPassword && touched.confirmPassword
+                      ? errors.confirmPassword
+                      : ''
+                  }
+                  txtInputStyle={Styles.inputField}
+                  onBlur={handleBlur('confirmPassword')}
+                  onChangeText={handleChange('confirmPassword')}
+                  value={values.confirmPassword}
+                  onSubmitEditing={handleSubmit}
+                  placeholder={t('signup.inputs.6')}
+                  placeholderTextColor={Colors.secondary}
+                  returnKeyType={'done'}
+                  textContentType="newPassword"
+                  autoComplete="new-password"
+                  autoCorrect={false}
+                  secureTextEntry
+                />
 
-            <TextInput
-              ref={lNameRef}
-              style={{
-                ...Styles.inputField,
-              }}
-              onSubmitEditing={() => phoneRef.current?.focus()}
-              onChangeText={setLName}
-              value={lName}
-              placeholder={'Last Name'}
-              placeholderTextColor={Colors.secondary}
-              returnKeyType={'next'}
-            />
+                <View style={Styles.btnCtn}>
+                  <TouchableOpacity
+                    onPress={handleSubmit}
+                    style={Styles.submitBtn}
+                  >
+                    <Text style={Styles.submitBtnTxt}>
+                      {t('signup.buttons.0')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </Formik>
+        </KeyboardAvoidingView>
 
-            <TextInput
-              ref={phoneRef}
-              style={{
-                ...Styles.inputField,
-              }}
-              onSubmitEditing={() => ageRef.current?.focus()}
-              onChangeText={setPhone}
-              value={phone}
-              placeholder={'Phone'}
-              placeholderTextColor={Colors.secondary}
-              textContentType="telephoneNumber"
-              inputMode="tel"
-              returnKeyType={'next'}
-            />
-
-            <TextInput
-              ref={ageRef}
-              style={{
-                ...Styles.inputField,
-              }}
-              onSubmitEditing={() => emailRef.current?.focus()}
-              onChangeText={setAge}
-              value={age}
-              placeholder={'Age'}
-              placeholderTextColor={Colors.secondary}
-              textContentType="birthdateYear"
-              inputMode="numeric"
-              returnKeyType={'next'}
-            />
-            <TextInput
-              ref={emailRef}
-              style={{
-                ...Styles.inputField,
-              }}
-              onSubmitEditing={() => passwordRef.current?.focus()}
-              onChangeText={setEmail}
-              value={email}
-              placeholder={'Email'}
-              placeholderTextColor={Colors.secondary}
-              textContentType="emailAddress"
-              autoComplete="email"
-              returnKeyType={'next'}
-              autoCorrect={false}
-              autoCapitalize='none'
-            />
-            <TextInput
-              ref={passwordRef}
-              style={{
-                ...Styles.inputField,
-              }}
-              onSubmitEditing={() => confirmPassRef.current?.focus()}
-              onChangeText={setPassword}
-              value={password}
-              placeholder={'Password'}
-              placeholderTextColor={Colors.secondary}
-              textContentType="newPassword"
-              autoComplete="new-password"
-              autoCorrect={false}
-              returnKeyType={'next'}
-              secureTextEntry
-            />
-            <TextInput
-              ref={confirmPassRef}
-              style={{
-                ...Styles.inputField,
-              }}
-              onSubmitEditing={onSubmit}
-              onChangeText={setConfirmPassword}
-              value={confirmPassword}
-              placeholder={'Confirm Password'}
-              placeholderTextColor={Colors.secondary}
-              returnKeyType={'done'}
-              textContentType="newPassword"
-              autoComplete="new-password"
-              autoCorrect={false}
-              secureTextEntry
-            />
-
-            <View style={Styles.btnCtn}>
-              <TouchableOpacity onPress={onSubmit} style={Styles.submitBtn}>
-                <Text style={Styles.submitBtnTxt}>SIGN UP</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={Styles.signupCtn}>
-            <Text style={Styles.txtColor}>Already have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={Styles.signupTxtColor}>LOGIN</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={Styles.signupCtn}>
+          <Text style={Styles.txtColor}>{t('signup.AccTxt')}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={Styles.signupTxtColor}>{t('signup.buttons.1')}</Text>
+          </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </Background>
   );
 }
@@ -221,6 +275,11 @@ const Styles = StyleSheet.create({
     color: Colors.secondary,
     fontSize: 18,
   },
+  errorMsg: {
+    color: Colors.tertiary,
+    paddingTop: 3,
+    paddingHorizontal: 15,
+  },
   btnCtn: {
     flexDirection: 'row',
     gap: 20,
@@ -251,6 +310,6 @@ const Styles = StyleSheet.create({
   submitBtnTxt: {
     color: Colors.secondary,
     fontSize: 17,
-    fontWeight: '700'
+    fontWeight: '700',
   },
 });

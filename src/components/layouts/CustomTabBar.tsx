@@ -1,14 +1,21 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useCityWeather } from '../../context/Context';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/Store';
 import { Colors } from '../../utils/Colors';
+import { useEffect } from 'react';
 
 export default function CustomTabBar({
   state,
   descriptors,
   navigation,
 }: BottomTabBarProps) {
-  const contextCity = useCityWeather();
+  const citiesWeatherData = useSelector((state: RootState) => state.Weather);
+  const locationCity = useSelector(
+    (state: RootState) => state.Location.cityName,
+  );
+
+    
 
   return (
     <View style={Styles.container}>
@@ -22,7 +29,6 @@ export default function CustomTabBar({
             : route.name;
 
         const isFocused = state.index === index;
-
         const onPress = () => {
           const event = navigation.emit({
             type: 'tabPress',
@@ -44,7 +50,7 @@ export default function CustomTabBar({
 
         return (
           <TouchableOpacity key={route.key} onPress={onPress}>
-            {contextCity[route.name]?.geolocation ? (
+            {route.name== locationCity ? (
               <Image
                 style={[
                   Styles.icon,

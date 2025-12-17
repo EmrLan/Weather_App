@@ -23,14 +23,17 @@ import {
 } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { useTranslation } from 'react-i18next';
+import InputField, {
+  InputFieldImperativeHandle,
+} from '../../components/inputField/InputField';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const navigation = useNavigation<StackNavigationProp>();
-  const passwordRef = useRef<TextInput>(null);
+  const passwordRef = useRef<InputFieldImperativeHandle>(null);
+  const { t, i18n } = useTranslation();
 
   const [confirm, setConfirm] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
@@ -95,69 +98,101 @@ export default function Login() {
       });
   };
 
-  const onSubmit = () => {
-    signInWithEmailAndPassword(getAuth(), email, password)
+  const onSubmit = ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    signInWithEmailAndPassword(getAuth(), email.trim(), password)
       .then(() => {
         console.log('User account signed in!');
       })
       .catch(error => {
         console.log('Error: ', error);
-
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-        }
-
-        console.error(error);
       });
   };
+
+  const loginSchema = Yup.object().shape({
+    email: Yup.string().email('Invalid email').required('Required'),
+    password: Yup.string().min(2, 'Too Short!').required('Required'),
+  });
 
   return (
     <Background>
       <KeyboardAvoidingView style={Styles.keyboardCtn} behavior="padding">
         <View style={Styles.container}>
-          <Text style={Styles.title}>LOGIN</Text>
+          <Text style={Styles.title}>{t('login.title')}</Text>
           <View style={Styles.form}>
-            <TextInput
-              style={{
-                ...Styles.inputField,
-              }}
-              onSubmitEditing={() => passwordRef.current?.focus()}
-              onChangeText={setEmail}
-              value={email}
-              placeholder={'Email'}
-              placeholderTextColor={Colors.secondary}
-              textContentType="emailAddress"
-              autoComplete="email"
-              autoCorrect={false}
-              returnKeyType={'next'}
-              autoCapitalize='none'
-            />
-            <TextInput
-              ref={passwordRef}
-              style={{
-                ...Styles.inputField,
-              }}
-              onChangeText={setPassword}
-              onSubmitEditing={onSubmit}
-              value={password}
-              placeholder={'Password'}
-              placeholderTextColor={Colors.secondary}
-              returnKeyType={'done'}
-              textContentType="password"
-              autoComplete="password"
-              autoCorrect={false}
-              secureTextEntry
-            />
-            <TouchableOpacity onPress={onSubmit} style={Styles.submitBtn}>
-              <Text style={{...Styles.txtColor, ...Styles.loginBtnTxt}}>LOGIN</Text>
-            </TouchableOpacity>
+            <Formik
+              initialValues={{ email: '', password: '' }}
+              validationSchema={loginSchema}
+              onSubmit={onSubmit}
+            >
+              {({
+                errors,
+                touched,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+              }) => (
+                <View>
+                  <InputField
+                    error={errors.email && touched.email ? errors.email : ''}
+                    txtInputStyle={Styles.inputField}
+                    onBlur={handleBlur('email')}
+                    onSubmitEditing={() =>
+                      passwordRef.current?.imperativeFocus()
+                    }
+                    onChangeText={handleChange('email')}
+                    value={values.email}
+                    placeholder={t('login.inputs.0')}
+                    placeholderTextColor={Colors.secondary}
+                    textContentType="emailAddress"
+                    autoComplete="email"
+                    autoCorrect={false}
+                    returnKeyType={'next'}
+                    autoCapitalize="none"
+                  />
 
+                  <InputField
+                    error={
+                      errors.password && touched.password ? errors.password : ''
+                    }
+                    txtInputStyle={Styles.inputField}
+                    ref={passwordRef}
+                    onBlur={handleBlur('password')}
+                    onChangeText={handleChange('password')}
+                    value={values.password}
+                    onSubmitEditing={handleSubmit}
+                    placeholder={t('login.inputs.1')}
+                    placeholderTextColor={Colors.secondary}
+                    returnKeyType={'done'}
+                    textContentType="password"
+                    autoComplete="password"
+                    autoCorrect={false}
+                    secureTextEntry
+                  />
+
+                  <TouchableOpacity
+                    onPress={handleSubmit}
+                    style={Styles.submitBtn}
+                  >
+                    <Text style={{ ...Styles.txtColor, ...Styles.loginBtnTxt }}>
+                      {t('login.buttons.0')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </Formik>
             <View style={Styles.resetSkipCtn}>
               <TouchableOpacity>
-                <Text style={Styles.txtColor}>Forgot password?</Text>
+                <Text style={Styles.txtColor}>{t('login.buttons.1')}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={ContinueAsGuest}>
-                <Text style={Styles.txtColor}>Continue as Guest</Text>
+                <Text style={Styles.txtColor}>{t('login.buttons.2')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -179,7 +214,7 @@ export default function Login() {
             style={Styles.googleBtn}
             onPress={onGoogleButtonPress}
           >
-            <Text style={Styles.googleBtnTxt}>CONTINUE WITH GOOGLE</Text>
+            <Text style={Styles.googleBtnTxt}>{t('login.buttons.3')}</Text>
             <Image
               style={Styles.googleIcon}
               source={require('../../../assets/icons/google_icon.png')}
@@ -187,9 +222,9 @@ export default function Login() {
           </TouchableOpacity>
 
           <View style={Styles.signupCtn}>
-            <Text style={Styles.txtColor}>Don't have an account? </Text>
+            <Text style={Styles.txtColor}>{t('login.noAccTxt')}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-              <Text style={Styles.signupBtnTxt}>SIGN UP</Text>
+              <Text style={Styles.signupBtnTxt}>{t('login.buttons.4')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -244,13 +279,17 @@ const Styles = StyleSheet.create({
     color: Colors.primary,
     marginHorizontal: 10,
     fontSize: 17,
-    fontWeight: '700'
+    fontWeight: '700',
   },
   googleIcon: {
     width: 30,
     height: 30,
   },
-
+  errorMsg: {
+    color: Colors.tertiary,
+    paddingTop: 3,
+    paddingHorizontal: 15,
+  },
   signupCtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -267,7 +306,7 @@ const Styles = StyleSheet.create({
   },
   loginBtnTxt: {
     fontSize: 17,
-    fontWeight: '700'
+    fontWeight: '700',
   },
   signupBtnTxt: {
     color: Colors.primary,

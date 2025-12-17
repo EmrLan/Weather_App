@@ -101,7 +101,7 @@ export default function AdminChat() {
     <Background>
       <View style={Styles.container}>
         <View style={Styles.innerContainer}>
-          <Header title={'Users'} />
+          <Header title={'Users'} color={Colors.bgSecondary}/>
           <View style={Styles.msgCtn}>
             <FlatList
               data={users}

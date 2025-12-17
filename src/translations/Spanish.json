@@ -1,0 +1,37 @@
+{
+    "drawer": ["Clima", "Agregar ciudad", "Mapa", "Configuración", "SuperChat", "Ayuda", "Cerrar sesión"],
+    "login": {
+        "title": "INICIAR SESIÓN",
+        "inputs": ["Correo electrónico", "Contraseña"],
+        "buttons": ["INICIAR SESIÓN", "¿Olvidaste tu contraseña?", "Continuar como invitado...", "CONTINUAR CON GOOGLE", "REGÍSTRESE"],
+        "noAccTxt": "¿No tienes una cuenta?"
+    },
+    "signup": {
+        "title": "REGÍSTRESE",
+        "inputs": ["Nombre", "Apellido", "Teléfono", "Edad", "Correo electrónico", "Contraseña", "Confirmar contraseña"],
+        "buttons": ["REGISTRARSE", "INICIA SESIÓN"],
+        "AccTxt": "¿Ya tienes una cuenta?"
+    },
+    "addCity": {
+        "errorMsg": "Ciudad no encontrada",
+        "value": "Ingresa el nombre de la ciudad",
+        "btnTxt": "Agregar ciudad"
+    },
+    "settings": {
+        "title": "Datos personales",
+        "data": ["Correo", "Edad", "Nombre", "Apellido", "Teléfono"],
+        "error": "Sin datos",
+        "errorNoAcc": "No se encontró cuenta",
+        "lang": "Idioma"
+    },
+    "weather": {
+        "forecast": "Pronóstico de 5 días"
+    },
+    "support": {
+        "chatTitle": "Chat de Ayuda",
+        "chatName": "Ayuda",
+        "chatUser": "Tú",
+        "value": "Escribe tu mensaje aquí",
+        "btn": "Enviar"
+    }
+}

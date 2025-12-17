@@ -1,7 +1,5 @@
-import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
-import DayBtn from '../buttons/DayBtn';
-import { ReactNode, useEffect, useState } from 'react';
-import { useCityWeather } from '../../context/Context';
+import { ReactNode } from 'react';
+import { StyleSheet, View } from 'react-native';
 
 interface PropsContainer {
   children: ReactNode;

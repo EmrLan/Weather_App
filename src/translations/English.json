@@ -1,0 +1,38 @@
+{
+    "drawer": ["Weather", "Add City", "Map","Settings", "SuperChat", "Support", "Logout"],
+    "login": {
+        "title": "LOGIN",
+        "inputs": ["Email", "Password"],
+        "buttons": ["LOGIN", "Forgot Password?", "Continue As Guest...", "CONTINUE WITH GOOGLE", "SIGN UP"],
+        "noAccTxt": "Don't Have An Account?"
+    },
+    "signup": {
+        "title": "SIGNUP",
+        "inputs": ["First Name","Last Name", "Phone", "Age","Email", "Password", "Confirm Password"],
+        "buttons": ["SIGN UP", "LOGIN"],
+        "AccTxt": "Already Have An Account?"
+    },
+    "addCity": {
+        "errorMsg": "City Not Found",
+        "value": "Enter City Name",
+        "btnTxt": "Add City"
+    },
+    "settings": {
+        "title" : "Personal Data",
+        "data": ["Email", "Age", "First Name", "Last Name", "Phone"],
+        "error": "No Data",
+        "errorNoAcc": "No Account Found",
+        "lang": "Language"
+    },
+    "weather": {
+        "forecast": "5-Day Forecasts"
+    },
+    "support": {
+        "chatTitle": "Support Chat",
+        "chatName": "Support",
+        "chatUser": "You",
+        "value": "Enter Your Message Here",
+        "btn": "Send"
+    }
+
+}

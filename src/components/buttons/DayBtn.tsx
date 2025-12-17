@@ -57,6 +57,7 @@ export default function DayBtn(props: PropsContainer) {
         >
           <Text style={{ ...Styles.curColor }}>{day}</Text>
           <Image
+            testID="cur-icon-image"
             style={Styles.btnIcon}
             source={{ uri: `https://openweathermap.org/img/wn/${icon}@4x.png` }}
           />
@@ -69,6 +70,7 @@ export default function DayBtn(props: PropsContainer) {
         <TouchableOpacity style={Styles.TouchOpCtn}>
           <Text style={{ ...Styles.color }}>{day}</Text>
           <Image
+            testID="other-icon-image"
             style={Styles.btnIcon}
             source={{ uri: `https://openweathermap.org/img/wn/${icon}@4x.png` }}
           />

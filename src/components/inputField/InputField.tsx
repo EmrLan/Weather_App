@@ -1,23 +1,29 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { CurrentWeatherData } from '../../views/AppContainer';
-import { Colors } from '../../utils/Colors';
 import React, { useImperativeHandle, useRef } from 'react';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  TextStyle,
+  View,
+} from 'react-native';
+import { Colors } from '../../utils/Colors';
 
-interface PropsContainer {
+interface PropsContainer extends TextInputProps {
   error: string;
-  value: string;
-  fn: (value: string) => void;
-  submitFn?: () => void;
-  placeholder: string;
+  txtInputStyle?: StyleProp<TextStyle>;
+  errorClr?: string;
 }
 
-type InputFieldImperativeHandle = {
+export type InputFieldImperativeHandle = {
+  imperativeFocus: () => void;
   imperativeClear: () => void;
   imperativeBlur: () => void;
 };
 
 function InputField(
-  props: PropsContainer,
+  { error = '', txtInputStyle, errorClr = 'red', ...rest }: PropsContainer,
   ref: React.Ref<InputFieldImperativeHandle>,
 ) {
   const inputRef = useRef<TextInput>(null);
@@ -26,35 +32,43 @@ function InputField(
     ref,
     () => {
       return {
+        imperativeFocus: () => inputRef.current?.focus(),
         imperativeBlur: () => inputRef.current?.blur(),
         imperativeClear: () => inputRef.current?.clear(),
       };
     },
-    [props.value],
+    [],
   );
 
   return (
-    <TextInput
-      ref={inputRef}
-      style={{
-        ...Styles.inputField,
-        ...(props.error.length > 0
-          ? {
-              borderColor: Colors.secondary,
-              color: Colors.secondary,
-              alignSelf: 'flex-start',
-            }
-          : {}),
-      }}
-      onChangeText={props.fn}
-      value={props.value}
-      placeholder={props.placeholder}
-      placeholderTextColor={
-        props.error.length > 0 ? Colors.secondary : Colors.secondary
-      }
-      onSubmitEditing={props.submitFn}
-      returnKeyType={'done'}
-    />
+    <View>
+      <TextInput
+        ref={inputRef}
+        style={[
+          txtInputStyle ? txtInputStyle : Styles.inputField,
+          error.length > 0
+            ? {
+                borderColor: errorClr,
+                color: errorClr,
+                alignSelf: 'flex-start',
+              }
+            : null,
+        ]}
+        {...rest}
+      />
+      <Text
+        style={{
+          ...Styles.errMsg,
+          ...(error.length > 0
+            ? {
+                color: errorClr,
+              }
+            : null),
+        }}
+      >
+        {error}
+      </Text>
+    </View>
   );
 }
 
@@ -65,6 +79,11 @@ const Styles = StyleSheet.create({
     borderColor: Colors.secondary,
     borderRadius: 30,
     padding: 20,
+    color: Colors.secondary,
+  },
+  errMsg: {
+    paddingTop: 2,
+    paddingLeft: 20,
     color: Colors.secondary,
   },
 });

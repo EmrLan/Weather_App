@@ -69,6 +69,10 @@
 
     <key>NSMicrophoneUsageDescription</key>
     <string>Your app needs microphone access for future voice input features.</string>
+
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Your location is used to provide personalized features and services even when the app is in the background.</string>
+
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

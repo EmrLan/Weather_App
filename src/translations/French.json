@@ -1,0 +1,37 @@
+{
+    "drawer": ["Météo", "Ajouter une ville", "Carte", "Paramètres", "SuperChat", "Support", "Déconnexion"],
+    "login": {
+        "title": "CONNEXION",
+        "inputs": ["E-mail", "Mot de passe"],
+        "buttons": ["SE CONNECTER", "Mot de passe oublié ?", "Continuer en tant qu'invité...", "CONTINUER AVEC GOOGLE", "S'INSCRIRE"],
+        "noAccTxt": "Vous n'avez pas de compte ?"
+    },
+    "signup": {
+        "title": "INSCRIPTION",
+        "inputs": ["Prénom", "Nom", "Téléphone", "Âge", "E-mail", "Mot de passe", "Confirmer le mot de passe"],
+        "buttons": ["S'INSCRIRE", "SE CONNECTER"],
+        "AccTxt": "Vous avez déjà un compte ?"
+    },
+    "addCity": {
+        "errorMsg": "Ville introuvable",
+        "value": "Entrez le nom de la ville",
+        "btnTxt": "Ajouter la ville"
+    },
+    "settings": {
+        "title": "Données personnelles",
+        "data": ["E-mail", "Âge", "Prénom", "Nom", "Téléphone"],
+        "error": "Aucune donnée",
+        "errorNoAcc": "Aucun compte trouvé",
+        "lang": "Langue"
+    },
+    "weather": {
+        "forecast": "Prévisions sur 5 jours"
+    },
+    "support": {
+        "chatTitle": "Chat d'assistance",
+        "chatName": "Support",
+        "chatUser": "Vous",
+        "value": "Entrez votre message ici",
+        "btn": "Envoyer"
+    }
+}

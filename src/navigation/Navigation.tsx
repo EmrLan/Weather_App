@@ -1,3 +1,6 @@
+import { getApp } from '@react-native-firebase/app';
+import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
 import {
   BottomTabNavigationProp,
   createBottomTabNavigator,
@@ -7,27 +10,26 @@ import {
   DrawerNavigationProp,
 } from '@react-navigation/drawer';
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
-import CustomerTabBar from '../components/layouts/CustomTabBar';
-import { useCityWeather } from '../context/Context';
-import AddCity from '../views/AddCity';
-import Weather from '../views/Weather';
-import Login from '../views/users/Login';
-import { Colors } from '../utils/Colors';
 import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import { Signup } from '../views/users/Signup';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import CustomerTabBar from '../components/layouts/CustomTabBar';
+import { RootState } from '../redux/Store';
+import { Colors } from '../utils/Colors';
+import AddCity from '../views/AddCity';
+import LazyMap from '../views/LazyMap';
 import Settings from '../views/Setting';
-import { useEffect, useMemo, useState } from 'react';
-import { getAuth, onAuthStateChanged } from '@react-native-firebase/auth';
-import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
-import Logout from '../views/users/Logout';
-import LoadingScreen from '../views/LoadingScreen';
-import SupportChat from '../views/supportChat/SupportChat';
-import { getApp } from '@react-native-firebase/app';
-import { getFirestore } from '@react-native-firebase/firestore';
 import AdminChat from '../views/supportChat/AdminChat';
+import SupportChat from '../views/supportChat/SupportChat';
+import Test from '../views/Text';
+import Login from '../views/users/Login';
+import Logout from '../views/users/Logout';
+import { Signup } from '../views/users/Signup';
+import Weather from '../views/weatherDispay/Weather';
+import { useTranslation } from 'react-i18next';
 
 const LeftDrawer = createDrawerNavigator<RootDrawerParamList>();
 const Tab = createBottomTabNavigator<CityTabParamList>();
@@ -42,6 +44,7 @@ type TabRouteName = Exclude<keyof CityTabParamList, number>;
 type RootDrawerParamList = {
   Weather: undefined;
   'Add City': undefined;
+  Map: undefined;
   SuperChat: undefined;
   Settings: undefined;
   Support: { routeEmail: string };
@@ -68,7 +71,8 @@ export type ProfileScreenNavigationProp = CompositeNavigationProp<
 const Stack = createNativeStackNavigator();
 
 export function CityTab() {
-  const cities = useCityWeather();
+  
+  const cities = useSelector((state: RootState) => state.Weather);
   const cityList = Object.keys(cities || []);
 
   return (
@@ -115,8 +119,8 @@ export function HomeStack() {
 }
 
 export const LeftDrawerScreen = () => {
+  const { t, i18n } = useTranslation();
   const app = getApp();
-  const db = getFirestore(app);
   const auth = getAuth(app);
   const userEmail = auth.currentUser?.email || '';
   return (
@@ -130,11 +134,12 @@ export const LeftDrawerScreen = () => {
         drawerActiveBackgroundColor: Colors.tertiary,
       }}
     >
-      <LeftDrawer.Screen name="Weather" component={CityTab} />
-      <LeftDrawer.Screen name="Add City" component={AddCity} />
-      <LeftDrawer.Screen name="Settings" component={Settings} />
+      <LeftDrawer.Screen options={{drawerLabel: t('drawer.0')}} name="Weather" component={CityTab} />
+      <LeftDrawer.Screen options={{drawerLabel: t('drawer.1')}} name="Add City" component={AddCity} />
+      <LeftDrawer.Screen options={{drawerLabel: t('drawer.2')}} name="Map" component={LazyMap} />
+      <LeftDrawer.Screen options={{drawerLabel: t('drawer.3')}} name="Settings" component={Settings} />
       {userEmail == 'support@gmail.com' ? (
-        <LeftDrawer.Screen name="SuperChat" component={AdminChat} />
+        <LeftDrawer.Screen options={{drawerLabel: t('drawer.4')}} name="SuperChat" component={AdminChat} />
       ) : (
         <LeftDrawer.Screen
           options={{
@@ -156,10 +161,10 @@ export const LeftDrawerScreen = () => {
           component={SupportChat}
         />
       ) : (
-        <LeftDrawer.Screen name="Support" component={SupportChat} />
+        <LeftDrawer.Screen options={{drawerLabel: t('drawer.5')}} name="Support" component={SupportChat} />
       )}
-
-      <LeftDrawer.Screen name="Logout" component={Logout} />
+      {/* <LeftDrawer.Screen name="Test" component={Test} /> */}
+      <LeftDrawer.Screen options={{drawerLabel: t('drawer.6')}} name="Logout" component={Logout} />
     </LeftDrawer.Navigator>
   );
 };
