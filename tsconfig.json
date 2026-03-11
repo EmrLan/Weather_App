@@ -1,14 +1,17 @@
 {
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
-    "allowJs": true 
+    "allowJs": true,
+    "types": [
+      "react-native",
+      "jest"
+    ]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    
     "**/*.d.ts",
-    "env.d.ts",
+    "env.d.ts"
   ],
   "exclude": [
     "**/node_modules",

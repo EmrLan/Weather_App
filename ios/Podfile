@@ -19,6 +19,8 @@ target 'Weather_App' do
   
   use_frameworks! :linkage => :static
   $RNFirebaseAsStaticFramework = true
+
+  pod 'RTNNativeLocalStorage', :path => '..'
   
   use_react_native!(
     :path => config[:reactNativePath],

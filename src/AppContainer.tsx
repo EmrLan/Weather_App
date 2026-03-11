@@ -20,6 +20,8 @@ import {
 } from './redux/actions/ActionTypes';
 import useWatchLocation from './zustand/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { PermissionsAndroid } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
 
 export interface CurrentWeatherData {
   name: string;
@@ -74,6 +76,44 @@ export default function AppContainer() {
   const [loadingOne, SetLoadingOne] = useState(false);
   const [loadingTwo, SetLoadingTwo] = useState(false);
   const setZu = useWatchLocation(state => state.setCoords);
+
+  useEffect(() => {
+    console.log('Messaging');
+    PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    );
+    requestUserPermission();
+  }, []);
+
+  async function requestUserPermission() {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
+  }
+}
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage.notification?.body));
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage.notification?.body))
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    loadToken();
+  }, []);
+
+  const loadToken = async () => {
+    await messaging().registerDeviceForRemoteMessages();
+    const token = await messaging().getToken();
+    console.log('Token: ', token);
+  };
 
   useEffect(() => {
     if (
@@ -140,7 +180,7 @@ export default function AppContainer() {
       }
     };
     saveToStorage();
-  }, [weatherData, localStorage]);
+  }, [weatherData]);
 
   const getLocal = useCallback(async () => {
     try {
@@ -163,10 +203,7 @@ export default function AppContainer() {
     SetLoadingOne(true);
     SetLoadingTwo(true);
 
-    GetCurrentWeatherDataWithLatLong(
-      location.latitude,
-      location.longitude
-    )
+    GetCurrentWeatherDataWithLatLong(location.latitude, location.longitude)
       .then(data => {
         setCurrentWeather(data || {});
       })
@@ -174,10 +211,7 @@ export default function AppContainer() {
         console.log(e);
       })
       .finally(() => SetLoadingOne(false));
-    GetFiveDayWeatherForecastWithLatLong(
-      location.latitude,
-      location.longitude
-    )
+    GetFiveDayWeatherForecastWithLatLong(location.latitude, location.longitude)
       .then(data => {
         setFiveDayForecast(data || {});
       })
