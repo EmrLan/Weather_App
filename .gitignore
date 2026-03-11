@@ -79,4 +79,4 @@ yarn-error.log
 
 # Sensitive/Config files
 plot.info
-google-services.json
+google-services.jsonios/GoogleService-Info.plist
